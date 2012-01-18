@@ -104,6 +104,22 @@ void eatWhitespace(FILE* infile) {
   }
 }
 
+void peekExpectedDelimiter(FILE* infile){
+  if(!isDelimiter(peek(infile))){
+    throw new StdioException("character not followed by delimiter\n");
+  }
+}
+
+void eatExpectedString(FILE* infile, string str) {
+  int c;
+  foreach(ch; str){
+    c = getc(infile);
+    if(cast(char) c != ch) {
+      throw new StdioException("unexpected character '%c'\n", c);
+    }
+  }
+}
+
 Object readCharacter(FILE* infile) {
   int c;
 
@@ -114,38 +130,22 @@ Object readCharacter(FILE* infile) {
   case 's':
     if(peek(infile) == 'p') {
       eatExpectedString(infile, "pace");
-      //TODO line 169 in original source
+      peekExpectedDelimiter(infile);
+      return makeCharacter(' ');
     }
+    break;
+  case 'n':
+    if(peek(infile) == 'e'){
+		eatExpectedString(infile, "ewline");
+		peekExpectedDelimiter(infile);
+		return makeCharacter('\n');
+	}
     break;
   default:
-    printf("default");
+  	break;    
   }
-}
-
-void eatExpectedString(FILE* infile, char* str) {
-  int c;
-
-  while(str != '\0') {
-    c = getc(infile);
-    if(c != str) {
-      throw new StdioException("unexpected character '%c'\n", c);
-    }
-    str++;
-  }
-}
-void eatWhitespace(FILE* infile) {
-  int c;
-
-  while((c = getc(infile)) != EOF) {
-    if(isSpace(c)) {
-      continue;
-    } else if(c == ';') { //comments are whitespace too
-      while(((c = getc(infile)) != EOF) && (c != '\n')) {};
-      continue;
-    }
-    ungetc(c, infile);
-    break;
-  }
+  peekExpectedDelimiter(infile);
+  return makeCharacter(cast(char) c);
 }
 
 Object read(FILE* infile) {
@@ -163,6 +163,8 @@ Object read(FILE* infile) {
       return True;
     case 'f':
       return False;
+    case '\\':
+      return readCharacter(infile);
     default:
       throw new StdioException("unknown boolean literal\n");
     }
@@ -209,7 +211,7 @@ void write(Object obj) {
     break;
   case ObjectType.CHARACTER:
     printf("#\\");
-    switch(c) {
+    switch(obj.charValue) {
     case '\n':
       printf("newline");
       break;
@@ -217,7 +219,7 @@ void write(Object obj) {
       printf("space");
       break;
     default:
-      putchar(c);
+      putchar(obj.charValue);
     }
     break;
   default:

@@ -37,19 +37,19 @@ Object True;
 
 /* Utility Functions */
 
-char isBoolean(Object obj){
+bool isBoolean(Object obj){
   return obj.type == ObjectType.BOOLEAN;
 }
 
-char isFalse(Object obj){
+bool isFalse(Object obj){
   return obj == False;
 }
 
-char isTrue(Object obj){
+bool isTrue(Object obj){
   return !isFalse(obj);
 }
 
-char isFixnum(Object obj){
+bool isFixnum(Object obj){
   return obj.type == ObjectType.FIXNUM;
 }
 
@@ -58,7 +58,7 @@ Object makeFixnum(long value){
   obj.longValue = value;
   return obj;
 }
-char isCharacter(Object obj){
+bool isCharacter(Object obj){
   return obj.type == ObjectType.CHARACTER;
 }
 
@@ -74,7 +74,7 @@ Object makeString(string value){
   return obj;
 }
 
-char isString(Object obj){
+bool isString(Object obj){
   return obj.type == ObjectType.STRING;
 }
 
@@ -88,7 +88,7 @@ void init(){
 
 /******************** READ ********************/
 
-char isDelimiter(char c){
+bool isDelimiter(char c){
   return isWhite(c) || c == EOF ||
          c == '('   || c== ')' || 
          c == '"'   || c == ';';
