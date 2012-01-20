@@ -172,7 +172,7 @@ Object read(FILE* infile){
   short sign = 1;
   long num = 0;
   char[] buffer;
-  immutable int INITIAL_ARR_SIZE = 1000;
+  const int INITIAL_ARR_SIZE = 1000;
 
   eatWhitespace(infile);
   
