@@ -327,7 +327,7 @@ Object readPair(FILE* infile) {
   eatWhitespace(infile);
   
   c = getc(infile);
-  if(c == ',') { //improper list
+  if(c == '.') { //improper list
     c = peek(infile);
     if(!isDelimiter(cast(char) c)){
       throw new StdioException("dot not follwed by delimiter\n");
@@ -335,7 +335,7 @@ Object readPair(FILE* infile) {
     cdr_obj = read(infile);
     eatWhitespace(infile);
     c = getc(infile);
-    if( c!= ')') {
+    if(c != ')') {
       throw new StdioException("missing right paren.\n");
     }
     return cons(car_obj, cdr_obj);
@@ -412,7 +412,7 @@ Object read(FILE* infile){
     buffer.length = i;
     return makeString(buffer.idup);
   } 
-  else if(c == '('){
+  else if(cast(char) c == '('){
     return readPair(infile);
   } 
   else {
@@ -431,6 +431,26 @@ Object eval(Object exp){
 }
 
 /********************* PRINT *********************/
+
+void writePair(Object* pair){
+  Object* car_obj;
+  Object* cdr_obj;
+
+  car_obj = car(pair);
+  cdr_obj = cdr(pair);
+  write(*car_obj);
+  if(cdr_obj.type == ObjectType.PAIR) {
+    printf(" ");
+    writePair(cdr_obj);
+  }
+  else if(cdr_obj.type == ObjectType.EMPTY_LIST){
+    return;
+  }
+  else {
+    printf(" . ");
+    write(*cdr_obj);
+  }
+}
 
 void write(Object obj){
   switch(obj.type){
@@ -475,6 +495,11 @@ void write(Object obj){
       }
     }
     putchar('"');
+    break;
+  case ObjectType.PAIR:
+    printf("(");
+    writePair(&obj);
+    printf(")");
     break;
   default:
     throw new StdioException("cannot write unknown type\n");
