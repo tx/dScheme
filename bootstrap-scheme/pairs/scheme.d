@@ -310,6 +310,43 @@ Object readCharacter(FILE* infile){
   return makeCharacter(cast(char) c);
 }
 
+Object readPair(FILE* infile) {
+  int c;
+  Object car_obj;
+  Object cdr_obj;
+
+  eatWhitespace(infile);
+
+  c = getc(infile);
+  if(c == ')') { // Read the emtpy list
+    return EmptyList;
+  }
+  ungetc(c, infile);
+
+  car_obj = read(infile);
+  eatWhitespace(infile);
+  
+  c = getc(infile);
+  if(c == ',') { //improper list
+    c = peek(infile);
+    if(!isDelimiter(cast(char) c)){
+      throw new StdioException("dot not follwed by delimiter\n");
+    }
+    cdr_obj = read(infile);
+    eatWhitespace(infile);
+    c = getc(infile);
+    if( c!= ')') {
+      throw new StdioException("missing right paren.\n");
+    }
+    return cons(car_obj, cdr_obj);
+  }
+  else { // read list
+    ungetc(c, infile);
+    cdr_obj = readPair(infile);
+    return cons(car_obj, cdr_obj);
+  }
+}
+
 Object read(FILE* infile){
   int c;
   short sign = 1;
@@ -320,6 +357,7 @@ Object read(FILE* infile){
   eatWhitespace(infile);
   
   c = getc(infile);
+
   if(c == '#'){ //boolean literal
     c = getc(infile);
     switch(c){
@@ -375,22 +413,14 @@ Object read(FILE* infile){
     return makeString(buffer.idup);
   } 
   else if(c == '('){
-    eatWhitespace(infile);
-    c = getc(infile);
-
-    if(c == ')'){
-      return EmptyList;
-    }
-    else {
+    return readPair(infile);
+  } 
+  else {
       throw new StdioException("unexpected character '" 
 			       ~ cast(char) c 
 			       ~ "'. Expecting ')'\n");
-    }
-  } 
-  else {
-    throw new StdioException("bad input. Unexpected character\n");
   }
-}
+} 
 
 
 /********************* EVALUATE *********************/
