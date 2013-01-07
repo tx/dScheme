@@ -1,5 +1,5 @@
 /*
- * Bootstrap Scheme - Strings
+ * Bootstrap Scheme - Pairs
  * A D implementation of the tutorial housed at 
  * http://michaux.ca/articles/scheme-from-scratch-bootstrap-v0_6-pairs
  * 
@@ -12,228 +12,141 @@ import std.ctype;
 /* Core data structures */
 
 enum ObjectType {PAIR, EMPTY_LIST, STRING, CHARACTER, BOOLEAN, FIXNUM};
+class Obj {
+  public const ObjectType type;
 
-struct Object {
-  ObjectType type;
+  this(ObjectType type) {
+    this.type = type;
+  }
 
-  union {
-    struct {
-      long longValue;
-    };
-    struct {
-      char boolValue;
-    };
-    struct {
-      char charValue;
-    };
-    struct {
-      string* stringValue;
-    };
-    struct {
-      Object* car;
-      Object* cdr;
-    };
-  };
-};
+  ObjectType getType() {
+    return type;
+  }
+}
 
-Object False;
-Object True;
-Object EmptyList;
+class Boolean : Obj {
+  public const bool value;
+  this(bool b){
+    value = b;
+    super(ObjectType.BOOLEAN);
+  }
+}
+
+class Number : Obj {
+  public const long value;
+  this(long l){
+    value = l;
+    super(ObjectType.FIXNUM);
+  }
+}
+
+class Character : Obj {
+  public const char value;
+  this(char c){
+    value = c;
+    super(ObjectType.CHARACTER);
+  }
+}
+
+class String : Obj {
+  public const string value;
+  this(string s){
+    value = s;
+    super(ObjectType.STRING);
+  }
+}
+
+class Pair : Obj {
+  public Obj car;
+  public Obj cdr;
+  this(Obj carObj, Obj cdrObj){
+    car = carObj;
+    cdr = cdrObj;
+    super(ObjectType.PAIR);
+  }
+}
+
+Obj False;
+Obj True; 
+Obj EmptyList;
+
+void init(){
+  EmptyList = new Obj(ObjectType.EMPTY_LIST);
+  False = new Boolean(false);
+  True = new Boolean(true);
+}
+
 
 /* Utility Functions */
-bool isEmptyList(ref Object obj) {
+bool isEmptyList(ref Obj obj) {
   return obj == EmptyList;
 }
 
-bool isBoolean(ref Object obj){
+bool isBoolean(ref Obj obj){
   return obj.type == ObjectType.BOOLEAN;
 }
 
-bool isFalse(ref Object obj){
+bool isFalse(ref Obj obj){
   return obj == False;
 }
 
-bool isTrue(ref Object obj){
+bool isTrue(ref Obj obj){
   return !isFalse(obj);
 }
 
-bool isFixnum(ref Object obj){
+bool isFixnum(ref Obj obj){
   return obj.type == ObjectType.FIXNUM;
 }
 
-Object makeFixnum(long value){
-  Object obj = Object(ObjectType.FIXNUM);
-  obj.longValue = value;
+Number makeFixnum(long value){
+  Number obj = new Number(value);
   return obj;
 }
-bool isCharacter(ref Object obj){
+
+bool isCharacter(ref Obj obj){
   return obj.type == ObjectType.CHARACTER;
 }
 
-Object makeCharacter(char value){
-  Object obj = Object(ObjectType.CHARACTER);
-  obj.charValue = value;
+Character makeCharacter(char value){
+  Character obj = new Character(value);
   return obj;
 }
 
-Object makeString(string value){
-  Object obj = Object(ObjectType.STRING);
-  obj.stringValue = &value;
+String makeString(string value){
+  String obj = new String(value);
   return obj;
 }
 
-bool isString(ref Object obj){
+bool isString(ref Obj obj){
   return obj.type == ObjectType.STRING;
 }
 
-Object cons(ref Object car, ref Object cdr){
-  Object obj = Object(ObjectType.PAIR);
-  obj.car = &car;
-  obj.cdr = &cdr;
+Pair cons(Obj car, Obj cdr){
+  Pair obj = new Pair(car, cdr);
   return obj;
 }
 
-bool isPair(ref Object obj){
+bool isPair(ref Obj obj){
   return obj.type == ObjectType.PAIR;
 }
 
-pure Object* car(Object* pair){
-  return pair.car;
+pure Obj car(ref Obj pair){
+  return (cast(Pair) pair).car;
 }
 
-void setCar(Object* obj, Object* value){
+void setCar(Pair* obj, Obj value){
   obj.car = value;
 }
 
-pure Object* cdr(Object* pair){
-  return pair.cdr;
+pure Obj cdr(ref Obj pair){
+  return (cast(Pair) pair).cdr;
 }
 
-void setCdr(Object* obj, Object* value){
+void setCdr(Pair* obj, Obj value){
   obj.cdr = value;
 }
 
-pure Object* caar(Object* obj){
-  return car(car(obj));
-}
 
-pure Object* cadr(Object* obj){
-  return car(cdr(obj));
-}
-
-pure Object* cdar(Object* obj){
-  return cdr(car(obj));
-}
-
-pure Object* cddr(Object* obj){
-  return cdr(cdr(obj));
-}
-
-pure Object* caaar(Object* obj){
-  return car(car(car(obj)));
-}
-
-pure Object* caadr(Object* obj){
-  return car(car(cdr(obj)));
-}
-
-pure Object* cadar(Object* obj){
-  return car(cdr(car(obj)));
-}
-
-pure Object* caddr(Object* obj){
-  return car(cdr(cdr(obj)));
-}
-
-pure Object* cdaar(Object* obj){
-  return cdr(car(car(obj)));
-}
-
-pure Object* cdadr(Object* obj){
-  return cdr(car(cdr(obj)));
-}
-
-pure Object* cddar(Object* obj){
-  return cdr(cdr(car(obj)));
-}
-
-pure Object* cdddr(Object* obj){
-  return cdr(cdr(cdr(obj)));
-}
-
-pure Object* caaaar(Object* obj){
-  return car(car(car(car(obj))));
-}
-
-pure Object* caaadr(Object* obj){
-  return car(car(car(cdr(obj))));
-}
-
-pure Object* caadar(Object* obj){
-  return car(car(cdr(car(obj))));
-}
-
-pure Object* caaddr(Object* obj){
-  return car(car(cdr(cdr(obj))));
-}
-
-pure Object* cadaar(Object* obj){
-  return car(cdr(car(car(obj))));
-}
-
-pure Object* cadadr(Object* obj){
-  return car(cdr(car(cdr(obj))));
-}
-
-pure Object* caddar(Object* obj){
-  return car(cdr(cdr(car(obj))));
-}
-
-pure Object* cadddr(Object* obj){
-  return car(cdr(cdr(cdr(obj))));
-}
-
-pure Object* cdaaar(Object* obj){
-  return cdr(car(car(car(obj))));
-}
-
-pure Object* cdaadr(Object* obj){
-  return cdr(car(car(cdr(obj))));
-}
-
-pure Object* cdadar(Object* obj){
-  return cdr(car(cdr(car(obj))));
-}
-
-pure Object* cdaddr(Object* obj){
-  return cdr(car(cdr(cdr(obj))));
-}
-
-pure Object* cddaar(Object* obj){
-  return cdr(cdr(car(car(obj))));
-}
-
-pure Object* cddadr(Object* obj){
-  return cdr(cdr(car(cdr(obj))));
-}
-
-pure Object* cdddar(Object* obj){
-  return cdr(cdr(cdr(car(obj))));
-}
-
-pure Object* cddddr(Object* obj){
-  return cdr(cdr(cdr(cdr(obj))));
-}
-
-void init(){
-  EmptyList = Object(ObjectType.EMPTY_LIST);
-
-  False = Object(ObjectType.BOOLEAN);
-  False.boolValue = 0;
-
-  True = Object(ObjectType.BOOLEAN);
-  True.boolValue = 1;
-}
 
 /******************** READ ********************/
 
@@ -258,7 +171,7 @@ void eatWhitespace(FILE* infile){
       continue;
     } 
     else if (c == ';'){ // ignore comments
-      while(((c = getc(infile)) != EOF) && (c != '\n')){};
+      while(((c = getc(infile)) != EOF) && (c != '\n')){ }
       continue;
     }
     ungetc(c, infile);
@@ -282,7 +195,7 @@ void eatExpectedString(FILE* infile, string str){
   }
 }
 
-Object readCharacter(FILE* infile){
+Obj readCharacter(FILE* infile){
   int c;
 
   c = getc(infile);
@@ -310,10 +223,10 @@ Object readCharacter(FILE* infile){
   return makeCharacter(cast(char) c);
 }
 
-Object readPair(FILE* infile) {
+Obj readPair(FILE* infile) {
   int c;
-  Object car_obj;
-  Object cdr_obj;
+  Obj car_obj;
+  Obj cdr_obj;
 
   eatWhitespace(infile);
 
@@ -347,7 +260,7 @@ Object readPair(FILE* infile) {
   }
 }
 
-Object read(FILE* infile){
+Obj read(FILE* infile){
   int c;
   short sign = 1;
   long num = 0;
@@ -426,33 +339,32 @@ Object read(FILE* infile){
 /********************* EVALUATE *********************/
 
 /* just echo for now */
-Object eval(Object exp){
+Obj eval(Obj exp){
   return exp;
 }
 
 /********************* PRINT *********************/
 
-void writePair(Object* pair){
-  Object* car_obj;
-  Object* cdr_obj;
+void writePair(ref Obj pair){
+  Obj car_obj = car(pair);
+  Obj cdr_obj = cdr(pair);
 
-  car_obj = car(pair);
-  cdr_obj = cdr(pair);
-  write(*car_obj);
+  write(car_obj);
   if(cdr_obj.type == ObjectType.PAIR) {
     printf(" ");
-    writePair(cdr_obj);
+    write(cdr_obj);
   }
   else if(cdr_obj.type == ObjectType.EMPTY_LIST){
+    printf(" () ");
     return;
   }
   else {
     printf(" . ");
-    write(*cdr_obj);
+    write(cdr_obj);
   }
 }
 
-void write(Object obj){
+void write(Obj obj){
   switch(obj.type){
   case ObjectType.EMPTY_LIST:
     printf("()");
@@ -461,11 +373,11 @@ void write(Object obj){
     printf("#%c", isFalse(obj) ? 'f' : 't');
     break;
   case ObjectType.FIXNUM:
-    printf("%ld", obj.longValue);
+    printf("%ld", (cast(Number) obj).value);
     break;
   case ObjectType.CHARACTER:
     printf("#\\");
-    switch(obj.charValue){
+    switch((cast(Character) obj).value){
     case '\n':
       printf("newline");
       break;
@@ -473,11 +385,11 @@ void write(Object obj){
       printf("space");
       break;
     default:
-      putchar(obj.charValue);
+      putchar((cast(Character) obj).value);
     }
     break;
   case ObjectType.STRING:
-    string str = *obj.stringValue;
+    string str = (cast(String) obj).value;
     putchar('"');
     foreach(ch; str){
       switch(ch){
@@ -498,7 +410,7 @@ void write(Object obj){
     break;
   case ObjectType.PAIR:
     printf("(");
-    writePair(&obj);
+    writePair(obj);
     printf(")");
     break;
   default:
@@ -508,10 +420,12 @@ void write(Object obj){
 
 /********************* REPL *********************/
 
-int main(char[][] args){
-  printf("Welcome to Bootstrap Scheme. User Ctrl-C to exit.\n");
 
-  init();
+int main(char[][] args){
+
+  printf("Welcome to Bootstrap Scheme. Use Ctrl-C to exit.\n");
+
+    init();
 
   while(true){
     printf("> ");
