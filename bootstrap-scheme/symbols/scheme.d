@@ -211,7 +211,7 @@ void eatWhitespace(FILE* infile){
 
 void peekExpectedDelimiter(FILE* infile){
   if(!isDelimiter(peek(infile))){
-    throw new StdioException("character not followed by delimiter\n");
+    throw new StdioException("character not followed by delimiter.");
   }
 }
 
@@ -220,7 +220,7 @@ void eatExpectedString(FILE* infile, string str){
   foreach(ch; str){
     c = getc(infile);
     if(cast(char) c != ch){
-      throw new StdioException("unexpected character '" ~ cast(char) c ~ "'\n");
+      throw new StdioException("unexpected character '" ~ cast(char) c ~ "'.");
     }
   }
 }
@@ -231,7 +231,7 @@ Obj readCharacter(FILE* infile){
   c = getc(infile);
   switch(c){
   case EOF:
-    throw new StdioException("incomplete character literal\n");
+    throw new StdioException("incomplete character literal.");
   case 's':
     if(peek(infile) == 'p'){
       eatExpectedString(infile, "pace");
@@ -273,13 +273,13 @@ Obj readPair(FILE* infile) {
   if(c == '.') { //improper list
     c = peek(infile);
     if(!isDelimiter(cast(char) c)){
-      throw new StdioException("dot not follwed by delimiter\n");
+      throw new StdioException("dot not follwed by delimiter.");
     }
     cdr_obj = read(infile);
     eatWhitespace(infile);
     c = getc(infile);
     if(c != ')') {
-      throw new StdioException("missing right paren.\n");
+      throw new StdioException("missing right paren.");
     }
     return cons(car_obj, cdr_obj);
   }
@@ -311,7 +311,7 @@ Obj read(FILE* infile){
     case '\\':
       return readCharacter(infile);
     default:
-      throw new StdioException("unknown boolean literal\n");
+      throw new StdioException("unknown boolean literal.");
     }
   } 
   else if(isDigit(c) || (c == '-' && (isDigit(peek(infile))))){
@@ -331,7 +331,7 @@ Obj read(FILE* infile){
       return makeFixnum(num);
     } 
     else {
-      throw new StdioException("number not followed by delimiter\n");
+      throw new StdioException("number not followed by delimiter.");
     }
   } else if(isInitial(cast(char) c) || 
 	    ((c == '+' || c == '-') && 
@@ -350,7 +350,7 @@ Obj read(FILE* infile){
       ungetc(c, infile);
       return makeSymbol(buffer[0..i].idup);
     } else {
-      throw new StdioException("symbol not followed by delimiter. Found '%c'\n", c);
+      throw new StdioException("symbol not followed by delimiter. Found '%c'.", c);
     }
   } else if(cast(char) c  == '"'){ /* read a string */
     auto i = 0;
@@ -363,7 +363,7 @@ Obj read(FILE* infile){
 	}
       }
       if(c == EOF){
-	throw new StdioException("non-terminated string literal\n");
+	throw new StdioException("non-terminated string literal.");
       }
       if(i == buffer.length)
 	buffer.length *= 2;
@@ -378,8 +378,7 @@ Obj read(FILE* infile){
   } 
   else {
       throw new StdioException("unexpected character '" 
-			       ~ cast(char) c 
-			       ~ "'. Expecting ')'\n");
+			       ~ cast(char) c);
   }
 } 
 
@@ -465,7 +464,7 @@ void write(Obj obj){
     writef("%s", (cast(Symbol) obj).value);
     break;
   default:
-    throw new StdioException("cannot write unknown type\n");
+    throw new StdioException("cannot write unknown type.");
   }
 }
 
