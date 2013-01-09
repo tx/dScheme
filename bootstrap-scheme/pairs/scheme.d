@@ -352,7 +352,7 @@ void writePair(ref Obj pair){
   write(car_obj);
   if(cdr_obj.type == ObjectType.PAIR) {
     printf(" ");
-    write(cdr_obj);
+    writePair(cdr_obj);
   }
   else if(cdr_obj.type == ObjectType.EMPTY_LIST){
     printf(" () ");
