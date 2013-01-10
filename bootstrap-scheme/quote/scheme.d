@@ -93,7 +93,7 @@ bool isEmptyList(ref Obj obj) {
   return obj == EmptyList;
 }
 
-bool isBoolean(ref Obj obj){
+pure bool isBoolean(ref Obj obj){
   return obj.type == ObjectType.BOOLEAN;
 }
 
@@ -105,7 +105,7 @@ bool isTrue(ref Obj obj){
   return !isFalse(obj);
 }
 
-bool isFixnum(ref Obj obj){
+pure bool isFixnum(ref Obj obj){
   return obj.type == ObjectType.FIXNUM;
 }
 
@@ -114,7 +114,7 @@ Number makeFixnum(long value){
   return obj;
 }
 
-bool isCharacter(ref Obj obj){
+pure bool isCharacter(ref Obj obj){
   return obj.type == ObjectType.CHARACTER;
 }
 
@@ -128,7 +128,7 @@ String makeString(string value){
   return obj;
 }
 
-bool isString(ref Obj obj){
+pure bool isString(ref Obj obj){
   return obj.type == ObjectType.STRING;
 }
 
@@ -137,46 +137,46 @@ Pair cons(Obj car, Obj cdr){
   return obj;
 }
 
-bool isPair(ref Obj obj){
+pure bool isPair(ref Obj obj){
   return obj.type == ObjectType.PAIR;
 }
 
-pure Obj car(Obj pair){
-  return (cast(Pair) pair).car;
+pure Obj car(Obj obj){
+  return isPair(obj) ? (cast(Pair) obj).car : obj;
 }
 
-pure Obj cdr(Obj pair){
-  return (cast(Pair) pair).cdr;
+pure Obj cdr(Obj obj){
+  return isPair(obj) ? (cast(Pair) obj).cdr : obj;
 }
 
-pure Obj caar(ref Obj pair){ return car(car(pair)); }
-pure Obj cadr(ref Obj pair){ return car(cdr(pair)); }
-pure Obj cdar(ref Obj pair){ return cdr(car(pair)); }
-pure Obj cddr(ref Obj pair){ return cdr(cdr(pair)); }
-pure Obj caaar(ref Obj pair){ return car(car(car(pair))); }
-pure Obj caadr(ref Obj pair){ return car(car(cdr(pair))); }
-pure Obj cadar(ref Obj pair){ return car(cdr(car(pair))); }
-pure Obj caddr(ref Obj pair){ return car(cdr(cdr(pair))); }
-pure Obj cdaar(ref Obj pair){ return cdr(car(car(pair))); }
-pure Obj cdadr(ref Obj pair){ return cdr(car(cdr(pair))); }
-pure Obj cddar(ref Obj pair){ return cdr(cdr(car(pair))); }
-pure Obj cdddr(ref Obj pair){ return cdr(cdr(cdr(pair))); }
-pure Obj caaaar(ref Obj pair){ return car(car(car(car(pair)))); }
-pure Obj caaadr(ref Obj pair){ return car(car(car(cdr(pair)))); }
-pure Obj caadar(ref Obj pair){ return car(car(cdr(car(pair)))); }
-pure Obj caaddr(ref Obj pair){ return car(car(cdr(cdr(pair)))); }
-pure Obj cadaar(ref Obj pair){ return car(cdr(car(car(pair)))); }
-pure Obj cadadr(ref Obj pair){ return car(cdr(car(cdr(pair)))); }
-pure Obj caddar(ref Obj pair){ return car(cdr(cdr(car(pair)))); }
-pure Obj cadddr(ref Obj pair){ return car(cdr(cdr(cdr(pair)))); }
-pure Obj cdaaar(ref Obj pair){ return cdr(car(car(car(pair)))); }
-pure Obj cdaadr(ref Obj pair){ return cdr(car(car(cdr(pair)))); }
-pure Obj cdadar(ref Obj pair){ return cdr(car(cdr(car(pair)))); }
-pure Obj cdaddr(ref Obj pair){ return cdr(car(cdr(cdr(pair)))); }
-pure Obj cddaar(ref Obj pair){ return cdr(cdr(car(car(pair)))); }
-pure Obj cddadr(ref Obj pair){ return cdr(cdr(car(cdr(pair)))); }
-pure Obj cdddar(ref Obj pair){ return cdr(cdr(cdr(car(pair)))); }
-pure Obj cddddr(ref Obj pair){ return cdr(cdr(cdr(cdr(pair)))); }
+pure Obj caar(ref Obj obj){ return car(car(obj)); }
+pure Obj cadr(ref Obj obj){ return car(cdr(obj)); }
+pure Obj cdar(ref Obj obj){ return cdr(car(obj)); }
+pure Obj cddr(ref Obj obj){ return cdr(cdr(obj)); }
+pure Obj caaar(ref Obj obj){ return car(car(car(obj))); }
+pure Obj caadr(ref Obj obj){ return car(car(cdr(obj))); }
+pure Obj cadar(ref Obj obj){ return car(cdr(car(obj))); }
+pure Obj caddr(ref Obj obj){ return car(cdr(cdr(obj))); }
+pure Obj cdaar(ref Obj obj){ return cdr(car(car(obj))); }
+pure Obj cdadr(ref Obj obj){ return cdr(car(cdr(obj))); }
+pure Obj cddar(ref Obj obj){ return cdr(cdr(car(obj))); }
+pure Obj cdddr(ref Obj obj){ return cdr(cdr(cdr(obj))); }
+pure Obj caaaar(ref Obj obj){ return car(car(car(car(obj)))); }
+pure Obj caaadr(ref Obj obj){ return car(car(car(cdr(obj)))); }
+pure Obj caadar(ref Obj obj){ return car(car(cdr(car(obj)))); }
+pure Obj caaddr(ref Obj obj){ return car(car(cdr(cdr(obj)))); }
+pure Obj cadaar(ref Obj obj){ return car(cdr(car(car(obj)))); }
+pure Obj cadadr(ref Obj obj){ return car(cdr(car(cdr(obj)))); }
+pure Obj caddar(ref Obj obj){ return car(cdr(cdr(car(obj)))); }
+pure Obj cadddr(ref Obj obj){ return car(cdr(cdr(cdr(obj)))); }
+pure Obj cdaaar(ref Obj obj){ return cdr(car(car(car(obj)))); }
+pure Obj cdaadr(ref Obj obj){ return cdr(car(car(cdr(obj)))); }
+pure Obj cdadar(ref Obj obj){ return cdr(car(cdr(car(obj)))); }
+pure Obj cdaddr(ref Obj obj){ return cdr(car(cdr(cdr(obj)))); }
+pure Obj cddaar(ref Obj obj){ return cdr(cdr(car(car(obj)))); }
+pure Obj cddadr(ref Obj obj){ return cdr(cdr(car(cdr(obj)))); }
+pure Obj cdddar(ref Obj obj){ return cdr(cdr(cdr(car(obj)))); }
+pure Obj cddddr(ref Obj obj){ return cdr(cdr(cdr(cdr(obj)))); }
 
 void setCar(Pair* obj, Obj value){
   obj.car = value;
@@ -186,7 +186,7 @@ void setCdr(Pair* obj, Obj value){
   obj.cdr = value;
 }
 
-bool isSymbol(Obj obj){
+pure bool isSymbol(Obj obj){
   return obj.type == ObjectType.SYMBOL;
 }
 
@@ -204,17 +204,24 @@ Obj makeSymbol(string value){
 
 /******************** READ ********************/
 
-bool isDelimiter(char c){
-  return isWhite(c) || c == EOF ||
-         c == '('   || c== ')' || 
-         c == '"'   || c == ';';
+pure bool isDelimiter(char c){
+  return isWhite(c) 
+    || c == EOF 
+    || c == '('   
+    || c == ')' 
+    || c == '"'   
+    || c == ';';
 }
 
-bool isInitial(char c) {
-    return isAlpha(c) || c == '*' ||
-      c == '/' || c == '>' ||
-      c == '<' || c == '=' || 
-      c == '?' || c == '!';
+pure bool isInitial(char c) {
+    return isAlpha(c) 
+      || c == '*' 
+      || c == '/' 
+      || c == '>' 
+      || c == '<' 
+      || c == '=' 
+      || c == '?' 
+      || c == '!';
 }
 
 char peek(FILE* infile){
@@ -415,15 +422,18 @@ Obj read(FILE* infile){
 
 
 /********************* EVALUATE *********************/
-bool isSelfEvaluating(ref Obj obj){
-  return isBoolean(obj) || isFixnum(obj) || isCharacter(obj) || isString(obj);
+pure bool isSelfEvaluating(ref Obj obj){
+  return isBoolean(obj) 
+    || isFixnum(obj) 
+    || isCharacter(obj) 
+    || isString(obj);
 }
 
 bool isTaggedList(Obj expression, Obj tag){
   Obj car_obj;
   if(isPair(expression)) {
     car_obj = car(expression);
-    return isSymbol(car_obj) && car_obj == tag;
+    return isSymbol(car_obj) && (car_obj == tag);
   }
   return false;
 }
