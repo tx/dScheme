@@ -12,15 +12,10 @@ import std.ctype;
 /* Core data structures */
 
 enum ObjectType {PAIR, EMPTY_LIST, STRING, CHARACTER, BOOLEAN, SYMBOL, FIXNUM};
-class Obj {
+class Obj : Object {
   public const ObjectType type;
-
   this(ObjectType type) {
     this.type = type;
-  }
-
-  ObjectType getType() {
-    return type;
   }
 }
 
@@ -59,9 +54,11 @@ class String : Obj {
 class Pair : Obj {
   public Obj car;
   public Obj cdr;
+  public const string value;
   this(Obj carObj, Obj cdrObj){
     car = carObj;
     cdr = cdrObj;
+    value = "[Pair]";
     super(ObjectType.PAIR);
   }
 }
@@ -71,6 +68,12 @@ class Symbol : Obj {
   this(string s){
     value = s;
     super(ObjectType.SYMBOL);
+  }
+
+  override public bool opEquals(Object o){
+    if(cast(Symbol) o is null)
+      return false;
+    return this.value == (cast(Symbol) o).value;
   }
 }
 
@@ -429,11 +432,11 @@ pure bool isSelfEvaluating(ref Obj obj){
     || isString(obj);
 }
 
-bool isTaggedList(Obj expression, Obj tag){
+bool isTaggedList(Obj expression, Symbol tag){
   Obj car_obj;
   if(isPair(expression)) {
     car_obj = car(expression);
-    return isSymbol(car_obj) && (car_obj == tag);
+    return isSymbol(car_obj) && tag == car_obj;
   }
   return false;
 }
