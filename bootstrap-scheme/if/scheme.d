@@ -1,7 +1,7 @@
 /*
- * Bootstrap Scheme - Environments
+ * Bootstrap Scheme - If
  * A D implementation of the tutorial housed at 
- * http://michaux.ca/articles/scheme-from-scratch-bootstrap-v0_9-environments
+ * http://michaux.ca/articles/scheme-from-scratch-bootstrap-v0_10-if
  * 
  */
 import std.stdio;
@@ -86,6 +86,7 @@ Symbol Quote;
 Symbol Ok;
 Symbol Set;
 Symbol Define;
+Symbol If;
 Symbol[string] SymbolTable;
 
 void init(){
@@ -96,30 +97,30 @@ void init(){
   Define = new Symbol("define");
   Set = new Symbol("set!");
   Ok = new Symbol("ok");
-
+  If = new Symbol("if");
   EmptyEnvironment = EmptyList;
   GlobalEnvironment = setupEnvironment();
 }
 
 
 /* Utility Functions */
-bool isEmptyList(ref Obj obj) {
+bool isEmptyList(Obj obj) {
   return obj == EmptyList;
 }
 
-pure bool isBoolean(ref Obj obj){
+pure bool isBoolean(Obj obj){
   return obj.type == ObjectType.BOOLEAN;
 }
 
-bool isFalse(ref Obj obj){
+bool isFalse(Obj obj){
   return obj == False;
 }
 
-bool isTrue(ref Obj obj){
+bool isTrue(Obj obj){
   return !isFalse(obj);
 }
 
-pure bool isFixnum(ref Obj obj){
+pure bool isFixnum(Obj obj){
   return obj.type == ObjectType.FIXNUM;
 }
 
@@ -128,7 +129,7 @@ Number makeFixnum(long value){
   return obj;
 }
 
-pure bool isCharacter(ref Obj obj){
+pure bool isCharacter(Obj obj){
   return obj.type == ObjectType.CHARACTER;
 }
 
@@ -142,7 +143,7 @@ String makeString(string value){
   return obj;
 }
 
-pure bool isString(ref Obj obj){
+pure bool isString(Obj obj){
   return obj.type == ObjectType.STRING;
 }
 
@@ -151,7 +152,7 @@ Pair cons(Obj car, Obj cdr){
   return obj;
 }
 
-pure bool isPair(ref Obj obj){
+pure bool isPair(Obj obj){
   return obj.type == ObjectType.PAIR;
 }
 
@@ -163,40 +164,40 @@ pure Obj cdr(Obj obj){
   return isPair(obj) ? (cast(Pair) obj).cdr : obj;
 }
 
-pure Obj caar(ref Obj obj){ return car(car(obj)); }
-pure Obj cadr(ref Obj obj){ return car(cdr(obj)); }
-pure Obj cdar(ref Obj obj){ return cdr(car(obj)); }
-pure Obj cddr(ref Obj obj){ return cdr(cdr(obj)); }
-pure Obj caaar(ref Obj obj){ return car(car(car(obj))); }
-pure Obj caadr(ref Obj obj){ return car(car(cdr(obj))); }
-pure Obj cadar(ref Obj obj){ return car(cdr(car(obj))); }
-pure Obj caddr(ref Obj obj){ return car(cdr(cdr(obj))); }
-pure Obj cdaar(ref Obj obj){ return cdr(car(car(obj))); }
-pure Obj cdadr(ref Obj obj){ return cdr(car(cdr(obj))); }
-pure Obj cddar(ref Obj obj){ return cdr(cdr(car(obj))); }
-pure Obj cdddr(ref Obj obj){ return cdr(cdr(cdr(obj))); }
-pure Obj caaaar(ref Obj obj){ return car(car(car(car(obj)))); }
-pure Obj caaadr(ref Obj obj){ return car(car(car(cdr(obj)))); }
-pure Obj caadar(ref Obj obj){ return car(car(cdr(car(obj)))); }
-pure Obj caaddr(ref Obj obj){ return car(car(cdr(cdr(obj)))); }
-pure Obj cadaar(ref Obj obj){ return car(cdr(car(car(obj)))); }
-pure Obj cadadr(ref Obj obj){ return car(cdr(car(cdr(obj)))); }
-pure Obj caddar(ref Obj obj){ return car(cdr(cdr(car(obj)))); }
-pure Obj cadddr(ref Obj obj){ return car(cdr(cdr(cdr(obj)))); }
-pure Obj cdaaar(ref Obj obj){ return cdr(car(car(car(obj)))); }
-pure Obj cdaadr(ref Obj obj){ return cdr(car(car(cdr(obj)))); }
-pure Obj cdadar(ref Obj obj){ return cdr(car(cdr(car(obj)))); }
-pure Obj cdaddr(ref Obj obj){ return cdr(car(cdr(cdr(obj)))); }
-pure Obj cddaar(ref Obj obj){ return cdr(cdr(car(car(obj)))); }
-pure Obj cddadr(ref Obj obj){ return cdr(cdr(car(cdr(obj)))); }
-pure Obj cdddar(ref Obj obj){ return cdr(cdr(cdr(car(obj)))); }
-pure Obj cddddr(ref Obj obj){ return cdr(cdr(cdr(cdr(obj)))); }
+pure Obj caar(Obj obj){ return car(car(obj)); }
+pure Obj cadr(Obj obj){ return car(cdr(obj)); }
+pure Obj cdar(Obj obj){ return cdr(car(obj)); }
+pure Obj cddr(Obj obj){ return cdr(cdr(obj)); }
+pure Obj caaar(Obj obj){ return car(car(car(obj))); }
+pure Obj caadr(Obj obj){ return car(car(cdr(obj))); }
+pure Obj cadar(Obj obj){ return car(cdr(car(obj))); }
+pure Obj caddr(Obj obj){ return car(cdr(cdr(obj))); }
+pure Obj cdaar(Obj obj){ return cdr(car(car(obj))); }
+pure Obj cdadr(Obj obj){ return cdr(car(cdr(obj))); }
+pure Obj cddar(Obj obj){ return cdr(cdr(car(obj))); }
+pure Obj cdddr(Obj obj){ return cdr(cdr(cdr(obj))); }
+pure Obj caaaar(Obj obj){ return car(car(car(car(obj)))); }
+pure Obj caaadr(Obj obj){ return car(car(car(cdr(obj)))); }
+pure Obj caadar(Obj obj){ return car(car(cdr(car(obj)))); }
+pure Obj caaddr(Obj obj){ return car(car(cdr(cdr(obj)))); }
+pure Obj cadaar(Obj obj){ return car(cdr(car(car(obj)))); }
+pure Obj cadadr(Obj obj){ return car(cdr(car(cdr(obj)))); }
+pure Obj caddar(Obj obj){ return car(cdr(cdr(car(obj)))); }
+pure Obj cadddr(Obj obj){ return car(cdr(cdr(cdr(obj)))); }
+pure Obj cdaaar(Obj obj){ return cdr(car(car(car(obj)))); }
+pure Obj cdaadr(Obj obj){ return cdr(car(car(cdr(obj)))); }
+pure Obj cdadar(Obj obj){ return cdr(car(cdr(car(obj)))); }
+pure Obj cdaddr(Obj obj){ return cdr(car(cdr(cdr(obj)))); }
+pure Obj cddaar(Obj obj){ return cdr(cdr(car(car(obj)))); }
+pure Obj cddadr(Obj obj){ return cdr(cdr(car(cdr(obj)))); }
+pure Obj cdddar(Obj obj){ return cdr(cdr(cdr(car(obj)))); }
+pure Obj cddddr(Obj obj){ return cdr(cdr(cdr(cdr(obj)))); }
 
-Obj enclosingEnvironment(ref Obj env){
+Obj enclosingEnvironment(Obj env){
   return cdr(env);
 }
 
-Obj firstFrame(ref Obj env){
+Obj firstFrame(Obj env){
   return car(env);
 }
 
@@ -204,24 +205,24 @@ Pair makeFrame(Obj variables, Obj values){
   return cons(variables, values);
 }
 
-Obj frameVariables(ref Pair frame) {
+Obj frameVariables(Pair frame) {
   return car(frame);
 }
 
-Obj frameValues(ref Pair frame) {
+Obj frameValues(Pair frame) {
   return cdr(frame);
 }
 
-void addBindingToFrame(ref Obj var, ref Obj val, ref Pair frame){
+void addBindingToFrame(Obj var, Obj val, Pair frame){
   setCar(frame, cons(var, car(frame)));
   setCdr(frame, cons(val, cdr(frame)));
 }
 
-Pair extendEnvironment(ref Obj vars, ref Obj vals, ref Obj baseEnv) {
+Pair extendEnvironment(Obj vars, Obj vals, Obj baseEnv) {
   return cons(makeFrame(vars, vals), baseEnv);
 }
 
-Obj lookupVariableValue(ref Obj var, ref Obj env) {
+Obj lookupVariableValue(Obj var, Obj env) {
   Pair frame;
   Obj vars;
   Obj vals;
@@ -282,11 +283,11 @@ Obj setupEnvironment(){
   return extendEnvironment(EmptyList, EmptyList, EmptyEnvironment);
 }
 
-void setCar(ref Pair obj, Obj value){
+void setCar(Pair obj, Obj value){
   obj.car = value;
 }
 
-void setCdr(ref Pair obj, Obj value){
+void setCdr(Pair obj, Obj value){
   obj.cdr = value;
 }
 
@@ -526,13 +527,13 @@ Obj read(FILE* infile){
 
 
 /********************* EVALUATE *********************/
-pure bool isSelfEvaluating(ref Obj obj){
+pure bool isSelfEvaluating(Obj obj){
   return isBoolean(obj) 
     || isFixnum(obj) 
     || isCharacter(obj) 
     || isString(obj);
 }
-bool isVariable(ref Obj expression) {
+bool isVariable(Obj expression) {
   return isSymbol(expression);
 }
 
@@ -546,36 +547,57 @@ bool isTaggedList(Obj expression, Symbol tag){
   return false;
 }
 
-bool isQuoted(ref Obj expression) {
+bool isQuoted(Obj expression) {
   return isTaggedList(expression, Quote);
 }
 
-Obj textOfQuotation(ref Obj exp) {
+Obj textOfQuotation(Obj exp) {
   return cadr(exp);
 }
 
-bool isAssignment(ref Obj exp) {
+bool isAssignment(Obj exp) {
   return isTaggedList(exp, Set);
 }
 
-Obj assignmentVariable(ref Obj exp){
+Obj assignmentVariable(Obj exp){
   return car(cdr(exp));
 }
 
-Obj assignmentValue(ref Obj exp){
+Obj assignmentValue(Obj exp){
   return car(cdr(cdr(exp)));
 }
 
-bool isDefinition(ref Obj exp){
+bool isDefinition(Obj exp){
   return isTaggedList(exp, Define);
 }
 
-Obj definitionVariable(ref Obj exp) {
+Obj definitionVariable(Obj exp) {
   return cadr(exp);
 }
 
-Obj definitionValue(ref Obj exp) {
+Obj definitionValue(Obj exp) {
   return caddr(exp);
+}
+
+bool isIf(Obj exp) {
+  return isTaggedList(exp, If);
+}
+
+Obj ifPredicate(Obj exp) {
+  return cadr(exp);
+}
+
+Obj ifConsequent(Obj exp) {
+  return caddr(exp);
+}
+
+Obj ifAlternative(Obj exp) {
+    if(isEmptyList(cdddr(exp))) {
+      return False;
+    }
+    else {
+      return cadddr(exp);
+    }
 }
 
 Obj evalAssignment(Obj exp, Obj env) {
@@ -601,6 +623,13 @@ Obj eval(Obj exp, Obj env){
     return evalAssignment(exp, env);
   } else if(isDefinition(exp)){
     return evalDefinition(exp, env);
+  } else if(isIf(exp)) {
+      if(isTrue(eval(ifPredicate(exp), env))){
+	  return eval(ifConsequent(exp), env);
+      }
+      else {
+	  return eval(ifAlternative(exp), env);
+      }
   } else {
     throw new StdioException("Cannot eval unknown expression type.");
   }
@@ -609,7 +638,7 @@ Obj eval(Obj exp, Obj env){
 
 /********************* PRINT *********************/
 
-void writePair(ref Obj pair){
+void writePair(Obj pair){
   Obj car_obj = car(pair);
   Obj cdr_obj = cdr(pair);
 
