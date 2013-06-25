@@ -613,27 +613,30 @@ Obj evalDefinition(Obj exp, Obj env) {
 }
 /* just echo for now */
 Obj eval(Obj exp, Obj env){
-  if(isSelfEvaluating(exp)) {
-    return exp;
-  } else if(isVariable(exp)) {
-    return lookupVariableValue(exp, env);
-  } else if(isQuoted(exp)) {
-    return textOfQuotation(exp);
-  } else if(isAssignment(exp)){
-    return evalAssignment(exp, env);
-  } else if(isDefinition(exp)){
-    return evalDefinition(exp, env);
-  } else if(isIf(exp)) {
-      if(isTrue(eval(ifPredicate(exp), env))){
-	  return eval(ifConsequent(exp), env);
+  Obj result = exp;
+  while(true) {
+      if(isSelfEvaluating(result)) {
+	  return result;
+      } else if(isVariable(result)) {
+	  return lookupVariableValue(result, env);
+      } else if(isQuoted(result)) {
+	  return textOfQuotation(result);
+      } else if(isAssignment(result)){
+	  return evalAssignment(result, env);
+      } else if(isDefinition(result)){
+	  return evalDefinition(result, env);
+      } else if(isIf(result)) {
+	  if(isTrue(eval(ifPredicate(result), env))){
+	      result = ifConsequent(result);
+	  }
+	  else {
+	      result = ifAlternative(result);
+	  }
+      } else {
+	  throw new StdioException("Cannot eval unknown expression type.");
       }
-      else {
-	  return eval(ifAlternative(exp), env);
-      }
-  } else {
-    throw new StdioException("Cannot eval unknown expression type.");
+      //      throw new StdioException("Illegal evaluation state!");
   }
-  throw new StdioException("Illegal evaluation state!");
 }
 
 /********************* PRINT *********************/
