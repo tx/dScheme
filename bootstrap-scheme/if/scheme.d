@@ -659,7 +659,7 @@ void writePair(Obj pair){
 }
 
 void write(Obj obj){
-c  switch(obj.type){
+  switch(obj.type){
   case ObjectType.EMPTY_LIST:
     printf("()");
     break;
