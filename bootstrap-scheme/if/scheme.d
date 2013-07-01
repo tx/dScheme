@@ -77,11 +77,11 @@ class Symbol : Obj {
   }
 }
 
-Obj False;
-Obj True; 
+Boolean False;
+Boolean True; 
 Obj EmptyList;
 Obj EmptyEnvironment;
-Obj GlobalEnvironment;
+Pair GlobalEnvironment;
 Symbol Quote;
 Symbol Ok;
 Symbol Set;
@@ -164,34 +164,34 @@ pure Obj cdr(Obj obj){
   return isPair(obj) ? (cast(Pair) obj).cdr : obj;
 }
 
-pure Obj caar(Obj obj){ return car(car(obj)); }
-pure Obj cadr(Obj obj){ return car(cdr(obj)); }
-pure Obj cdar(Obj obj){ return cdr(car(obj)); }
-pure Obj cddr(Obj obj){ return cdr(cdr(obj)); }
-pure Obj caaar(Obj obj){ return car(car(car(obj))); }
-pure Obj caadr(Obj obj){ return car(car(cdr(obj))); }
-pure Obj cadar(Obj obj){ return car(cdr(car(obj))); }
-pure Obj caddr(Obj obj){ return car(cdr(cdr(obj))); }
-pure Obj cdaar(Obj obj){ return cdr(car(car(obj))); }
-pure Obj cdadr(Obj obj){ return cdr(car(cdr(obj))); }
-pure Obj cddar(Obj obj){ return cdr(cdr(car(obj))); }
-pure Obj cdddr(Obj obj){ return cdr(cdr(cdr(obj))); }
-pure Obj caaaar(Obj obj){ return car(car(car(car(obj)))); }
-pure Obj caaadr(Obj obj){ return car(car(car(cdr(obj)))); }
-pure Obj caadar(Obj obj){ return car(car(cdr(car(obj)))); }
-pure Obj caaddr(Obj obj){ return car(car(cdr(cdr(obj)))); }
-pure Obj cadaar(Obj obj){ return car(cdr(car(car(obj)))); }
-pure Obj cadadr(Obj obj){ return car(cdr(car(cdr(obj)))); }
-pure Obj caddar(Obj obj){ return car(cdr(cdr(car(obj)))); }
-pure Obj cadddr(Obj obj){ return car(cdr(cdr(cdr(obj)))); }
-pure Obj cdaaar(Obj obj){ return cdr(car(car(car(obj)))); }
-pure Obj cdaadr(Obj obj){ return cdr(car(car(cdr(obj)))); }
-pure Obj cdadar(Obj obj){ return cdr(car(cdr(car(obj)))); }
-pure Obj cdaddr(Obj obj){ return cdr(car(cdr(cdr(obj)))); }
-pure Obj cddaar(Obj obj){ return cdr(cdr(car(car(obj)))); }
-pure Obj cddadr(Obj obj){ return cdr(cdr(car(cdr(obj)))); }
-pure Obj cdddar(Obj obj){ return cdr(cdr(cdr(car(obj)))); }
-pure Obj cddddr(Obj obj){ return cdr(cdr(cdr(cdr(obj)))); }
+pure Obj caar(Pair obj){ return car(car(obj)); }
+pure Obj cadr(Pair obj){ return car(cdr(obj)); }
+pure Obj cdar(Pair obj){ return cdr(car(obj)); }
+pure Obj cddr(Pair obj){ return cdr(cdr(obj)); }
+pure Obj caaar(Pair obj){ return car(car(car(obj))); }
+pure Obj caadr(Pair obj){ return car(car(cdr(obj))); }
+pure Obj cadar(Pair obj){ return car(cdr(car(obj))); }
+pure Obj caddr(Pair obj){ return car(cdr(cdr(obj))); }
+pure Obj cdaar(Pair obj){ return cdr(car(car(obj))); }
+pure Obj cdadr(Pair obj){ return cdr(car(cdr(obj))); }
+pure Obj cddar(Pair obj){ return cdr(cdr(car(obj))); }
+pure Obj cdddr(Pair obj){ return cdr(cdr(cdr(obj))); }
+pure Obj caaaar(Pair obj){ return car(car(car(car(obj)))); }
+pure Obj caaadr(Pair obj){ return car(car(car(cdr(obj)))); }
+pure Obj caadar(Pair obj){ return car(car(cdr(car(obj)))); }
+pure Obj caaddr(Pair obj){ return car(car(cdr(cdr(obj)))); }
+pure Obj cadaar(Pair obj){ return car(cdr(car(car(obj)))); }
+pure Obj cadadr(Pair obj){ return car(cdr(car(cdr(obj)))); }
+pure Obj caddar(Pair obj){ return car(cdr(cdr(car(obj)))); }
+pure Obj cadddr(Pair obj){ return car(cdr(cdr(cdr(obj)))); }
+pure Obj cdaaar(Pair obj){ return cdr(car(car(car(obj)))); }
+pure Obj cdaadr(Pair obj){ return cdr(car(car(cdr(obj)))); }
+pure Obj cdadar(Pair obj){ return cdr(car(cdr(car(obj)))); }
+pure Obj cdaddr(Pair obj){ return cdr(car(cdr(cdr(obj)))); }
+pure Obj cddaar(Pair obj){ return cdr(cdr(car(car(obj)))); }
+pure Obj cddadr(Pair obj){ return cdr(cdr(car(cdr(obj)))); }
+pure Obj cdddar(Pair obj){ return cdr(cdr(cdr(car(obj)))); }
+pure Obj cddddr(Pair obj){ return cdr(cdr(cdr(cdr(obj)))); }
 
 Obj enclosingEnvironment(Obj env){
   return cdr(env);
@@ -218,7 +218,7 @@ void addBindingToFrame(Obj var, Obj val, Pair frame){
   setCdr(frame, cons(val, cdr(frame)));
 }
 
-Pair extendEnvironment(Obj vars, Obj vals, Obj baseEnv) {
+Pair extendEnvironcment(Obj vars, Obj vals, Obj baseEnv) {
   return cons(makeFrame(vars, vals), baseEnv);
 }
 
@@ -279,7 +279,7 @@ Obj defineVariable(Obj var, Obj val, Obj env){
   return val;
 }
 
-Obj setupEnvironment(){
+Pair setupEnvironment(){
   return extendEnvironment(EmptyList, EmptyList, EmptyEnvironment);
 }
 
@@ -551,7 +551,7 @@ bool isQuoted(Obj expression) {
   return isTaggedList(expression, Quote);
 }
 
-Obj textOfQuotation(Obj exp) {
+Obj textOfQuotation(Pair exp) {
   return cadr(exp);
 }
 
@@ -571,11 +571,11 @@ bool isDefinition(Obj exp){
   return isTaggedList(exp, Define);
 }
 
-Obj definitionVariable(Obj exp) {
+Obj definitionVariable(Pair exp) {
   return cadr(exp);
 }
 
-Obj definitionValue(Obj exp) {
+Obj definitionValue(Pair exp) {
   return caddr(exp);
 }
 
@@ -583,15 +583,15 @@ bool isIf(Obj exp) {
   return isTaggedList(exp, If);
 }
 
-Obj ifPredicate(Obj exp) {
+Obj Predicate(Pair exp) {
   return cadr(exp);
 }
 
-Obj ifConsequent(Obj exp) {
+Obj Consequent(Pair exp) {
   return caddr(exp);
 }
 
-Obj ifAlternative(Obj exp) {
+Obj Alternative(Pair exp) {
     if(isEmptyList(cdddr(exp))) {
       return False;
     }
@@ -606,7 +606,7 @@ Obj evalAssignment(Obj exp, Obj env) {
 		   env);
 }
 
-Obj evalDefinition(Obj exp, Obj env) {
+Obj evalDefinition(Pair exp, Pair env) {
   return defineVariable(definitionVariable(exp),
 			eval(definitionValue(exp), env),
 			env);
@@ -619,17 +619,17 @@ Obj eval(Obj exp, Obj env){
       } else if(isVariable(exp)) {
 	  return lookupVariableValue(exp, env);
       } else if(isQuoted(exp)) {
-	  return textOfQuotation(exp);
+	  return textOfQuotation(cast(Pair) exp);
       } else if(isAssignment(exp)){
 	  return evalAssignment(exp, env);
       } else if(isDefinition(exp)){
-	  return evalDefinition(exp, env);
+	  return evalDefinition(cast(Pair) exp, cast(Pair) env);
       } else if(isIf(exp)) {
-	  if(isTrue(eval(ifPredicate(exp), env))){
-	      exp = ifConsequent(exp);
+	  if(isTrue(eval(Predicate(cast(Pair) exp), env))){
+	      exp = Consequent(cast(Pair) exp);
 	  }
 	  else {
-	      exp = ifAlternative(exp);
+	      exp = Alternative(cast(Pair) exp);
 	  }
       } else {
 	  throw new StdioException("Cannot eval unknown expression type.");
@@ -659,7 +659,7 @@ void writePair(Obj pair){
 }
 
 void write(Obj obj){
-  switch(obj.type){
+c  switch(obj.type){
   case ObjectType.EMPTY_LIST:
     printf("()");
     break;
