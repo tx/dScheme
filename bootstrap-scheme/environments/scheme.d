@@ -7,7 +7,7 @@
 import std.stdio;
 import std.ascii;
 import std.string;
-import std.ctype;
+import core.stdc.ctype;
 
 /* Core data structures */
 
